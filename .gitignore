@@ -1,0 +1,11 @@
+# Executables and Binaries
+*.exe
+*.dll
+
+# Logs and Output
+out.txt
+*.log
+
+# OS Generated
+.DS_Store
+Thumbs.db
