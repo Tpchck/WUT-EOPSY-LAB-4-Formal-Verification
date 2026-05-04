@@ -1,0 +1,64 @@
+server:	fork (servers chair[2]:self; agents ph[2]:ph),
+services	{take_first,take_second,release_first,release_second},
+states	{taken,free},
+actions {
+	<j=1..2>{ph[j].fork.take_first, fork.free}	-> {ph[j].chair[j].may_take_second, fork.taken},
+	<j=1..2>{ph[j].fork.take_second, fork.free}	-> {ph[j].chair[j].may_eat, fork.taken},
+	<j=1..2>{ph[j].fork.release_first, fork.taken}	-> {ph[j].chair[j].may_release_second, fork.free},
+	<j=1..2>{ph[j].fork.release_second, fork.taken}	-> {ph[j].chair[j].may_think, fork.free},
+};
+server:	chair (servers fork[2]:fork; agents ph:ph),
+services	{may_eat,may_think,may_take_second,may_release_second},
+states	{think,eat,first_left,first_right},
+actions {
+	{ph.chair.may_think, chair.think}	-> {ph.chair.may_think, chair.think},
+	{ph.chair.may_think, chair.think}	-> {ph.fork[1].take_first, chair.first_left},
+	{ph.chair.may_think, chair.think}	-> {ph.fork[2].take_first, chair.first_right},
+	{ph.chair.may_take_second, chair.first_left}	-> {ph.fork[2].take_second, chair.eat},
+	{ph.chair.may_take_second, chair.first_right}	-> {ph.fork[1].take_second, chair.eat},
+	{ph.chair.may_eat, chair.eat}	-> {ph.chair.may_eat, chair.eat},
+	{ph.chair.may_eat, chair.eat}	-> {ph.fork[1].release_first, chair.first_left},
+	{ph.chair.may_eat, chair.eat}	-> {ph.fork[2].release_first, chair.first_right},
+	{ph.chair.may_release_second, chair.first_left}	-> {ph.fork[2].release_second, chair.think},
+	{ph.chair.may_release_second, chair.first_right}	-> {ph.fork[1].release_second, chair.think},
+};
+server:	chair_first_left (servers fork[2]:fork; agents ph:ph),
+services	{may_eat,may_think,may_take_second,may_release_second},
+states	{think,eat,first_left,first_right},
+actions {
+	{ph.chair_first_left.may_think, chair_first_left.think}	-> {ph.chair_first_left.may_think, chair_first_left.think},
+	{ph.chair_first_left.may_think, chair_first_left.think}	-> {ph.fork[1].take_first, chair_first_left.first_left},
+	{ph.chair_first_left.may_take_second, chair_first_left.first_left}	-> {ph.fork[2].take_second, chair_first_left.eat},
+	{ph.chair_first_left.may_eat, chair_first_left.eat}	-> {ph.chair_first_left.may_eat, chair_first_left.eat},
+	{ph.chair_first_left.may_eat, chair_first_left.eat}	-> {ph.fork[1].release_first, chair_first_left.first_left},
+	{ph.chair_first_left.may_eat, chair_first_left.eat}	-> {ph.fork[2].release_first, chair_first_left.first_right},
+	{ph.chair_first_left.may_release_second, chair_first_left.first_left}	-> {ph.fork[2].release_second, chair_first_left.think},
+	{ph.chair_first_left.may_release_second, chair_first_left.first_right}	-> {ph.fork[1].release_second, chair_first_left.think},
+};
+server:	chair_first_right (servers fork[2]:fork; agents ph:ph),
+services	{may_eat,may_think,may_take_second,may_release_second},
+states	{think,eat,first_left,first_right},
+actions {
+	{ph.chair_first_right.may_think, chair_first_right.think}	-> {ph.chair_first_right.may_think, chair_first_right.think},
+	{ph.chair_first_right.may_think, chair_first_right.think}	-> {ph.fork[2].take_first, chair_first_right.first_right},
+	{ph.chair_first_right.may_take_second, chair_first_right.first_right}	-> {ph.fork[1].take_second, chair_first_right.eat},
+	{ph.chair_first_right.may_eat, chair_first_right.eat}	-> {ph.chair_first_right.may_eat, chair_first_right.eat},
+	{ph.chair_first_right.may_eat, chair_first_right.eat}	-> {ph.fork[1].release_first, chair_first_right.first_left},
+	{ph.chair_first_right.may_eat, chair_first_right.eat}	-> {ph.fork[2].release_first, chair_first_right.first_right},
+	{ph.chair_first_right.may_release_second, chair_first_right.first_left}	-> {ph.fork[2].release_second, chair_first_right.think},
+	{ph.chair_first_right.may_release_second, chair_first_right.first_right}	-> {ph.fork[1].release_second, chair_first_right.think},
+};
+agent:	ph;
+agents	ph[3]:ph;
+servers	fork[3]:fork,chair[1]:chair,chair_first_right:chair_first_right,chair_first_left:chair_first_left;
+init	-> {
+	ph[1].chair[1].may_think,
+	ph[2].chair_first_left.may_think,
+	ph[3].chair_first_right.may_think,
+	fork[1](chair_first_right,chair[1],ph[3,1]).free,
+	fork[2](chair[1],chair_first_left,ph[1,2]).free,
+	fork[3](chair_first_left,chair_first_right,ph[2,3]).free,
+	chair[1](fork[1,2],ph[1]).think,
+	chair_first_right(fork[3,1],ph[3]).think,
+	chair_first_left(fork[2,3],ph[2]).think,
+}

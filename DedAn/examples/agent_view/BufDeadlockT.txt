@@ -1,0 +1,28 @@
+server:	buf,
+services	{put, get}
+states	{elem0, elem[3]}
+;
+server:	Sprodcons,
+services	{doSth, ok_put, ok_get}
+states	{neutral, prod, cons}
+;
+agent:	Aprodcons (servers buf:buf,Sprodcons:Sprodcons),
+actions {
+	{Aprodcons.buf.get, buf.elem[1]}	-> {Aprodcons.Sprodcons.ok_get, buf.elem0},
+	<j=2..3>{Aprodcons.buf.get, buf.elem[j]}	-> {Aprodcons.Sprodcons.ok_get, buf.elem[j-1]},
+	<j=1..2>{Aprodcons.buf.put, buf.elem[j]}	-> {Aprodcons.Sprodcons.ok_put, buf.elem[j+1]},
+	{Aprodcons.buf.put, buf.elem0}	-> {Aprodcons.Sprodcons.ok_put, buf.elem[1]},
+	{Aprodcons.Sprodcons.ok_get, Sprodcons.cons}	-> {Aprodcons.Sprodcons.doSth, Sprodcons.neutral},
+	{Aprodcons.Sprodcons.doSth, Sprodcons.neutral}	-> {Aprodcons.buf.get, Sprodcons.cons},
+	{Aprodcons.Sprodcons.doSth, Sprodcons.neutral}	-> {Aprodcons.buf.put, Sprodcons.prod},
+	{Aprodcons.Sprodcons.ok_put, Sprodcons.prod}	-> {Aprodcons.Sprodcons.doSth, Sprodcons.neutral},
+};
+agents	Aprodcons[3]:Aprodcons;
+servers	buf:buf,Sprodcons[3]:Sprodcons;
+init	-> {
+	Aprodcons[1](buf,Sprodcons[1]).Sprodcons[1].doSth,
+	Aprodcons[2](buf,Sprodcons[2]).Sprodcons[2].doSth,
+	Aprodcons[3](buf,Sprodcons[3]).Sprodcons[3].doSth,
+	buf.elem0,
+	<j=1..3>Sprodcons[j].neutral,
+}

@@ -1,0 +1,9 @@
+catalog https://staff.elka.pw.edu.pl/~wdaszczu/
+
+DedAn.exe - verifier
+*.dll - supplementary files for the executable
+Syntax.txt - syntax of input language for DedAn verifier
+CommLine_pars.txt - description of command-line interface of DedAn 
+Dedan_Examples.zip - a set of examples
+Examples.txt - description of examples
+Dedan-recording.mp4 - Tutorial on using DedAn

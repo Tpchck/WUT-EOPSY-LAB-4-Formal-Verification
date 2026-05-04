@@ -1,0 +1,36 @@
+server:	res,
+services	{take, use[2]}
+states	{all_free, taken[2], taken1_2, taken_act[2], taken1_2_act[2], taken1_2_act1_2}
+;
+server:	proc,
+services	{start, ok_take[2], used, do_work}
+states	{ini, wait, using[2], own_work[2]}
+;
+agent:	A (servers proc:proc,res:res),
+actions {
+	{A.proc.start, proc.ini}	-> {A.res.take, proc.wait},
+	<j=1..2>{A.proc.do_work, proc.own_work[j]}	-> {A.proc.do_work, proc.own_work[j]},
+	<j=1..2>{A.proc.do_work, proc.own_work[j]}	-> {A.res.use[j], proc.using[j]},
+	<j=1..2>{A.proc.used, proc.using[j]}	-> {A.proc.do_work, proc.own_work[j]},
+	<j=1..2>{A.proc.ok_take[j], proc.wait}	-> {A.res.use[j], proc.using[j]},
+	{A.res.take, res.all_free}	-> {A.proc.ok_take[1], res.taken[1]},
+	{A.res.take, res.all_free}	-> {A.proc.ok_take[2], res.taken[2]},
+	<i=1..2>{A.res.take, res.taken[i]}	-> {A.proc.ok_take[3-i], res.taken1_2},
+	<i=1..2>{A.res.use[i], res.taken[i]}	-> {A.res.use[i], res.taken_act[i]},
+	<i=1..2>{A.res.take, res.taken_act[i]}	-> {A.proc.ok_take[3-i], res.taken1_2_act1_2},
+	<i=1..2>{A.res.use[i], res.taken_act[i]}	-> {A.proc.used, res.taken[i]},
+	<i=1..2>{A.res.use[i], res.taken1_2}	-> {A.res.use[i], res.taken1_2_act[i]},
+	<i=1..2>{A.res.use[i], res.taken1_2_act[3-i]}	-> {A.res.use[i], res.taken1_2_act1_2},
+	<i=1..2>{A.res.use[i], res.taken1_2_act[i]}	-> {A.proc.used, res.taken1_2},
+	<i=1..2>{A.res.use[i], res.taken1_2_act[i]}	-> {A.res.use[i], res.taken1_2_act[i]},
+	<i=1..2>{A.res.use[i], res.taken1_2_act1_2}	-> {A.proc.used, res.taken1_2_act[3-i]},
+};
+agents	A[3]:A;
+servers	proc[3]:proc,res:res;
+init	-> {
+	A[1](proc[1],res).proc[1].start,
+	A[2](proc[2],res).proc[2].start,
+	A[3](proc[3],res).proc[3].start,
+	<j=1..3>proc[j].ini,
+	res.all_free,
+}

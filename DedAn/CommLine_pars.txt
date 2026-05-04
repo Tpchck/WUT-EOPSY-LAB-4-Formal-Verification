@@ -1,0 +1,13 @@
+-C - program run in command-line env (implies -T, default -S, default -V)
+-M:file - model in textfile
+-MT:file - model in textfile
+-MX:file - model in XML file
+-T - run for a set of servers/agents together (implies -C)
+-S - server deadlock verification (all servers, implies -T)
+-S:comma-delimited list - server deadlock verification for given list (implies -T)
+-A - agent deadlock verification (all agents, implies -T)
+-A:comma-delimited list - agent deadlock verification for given list (implies -T)
+-E - agent termination verification (all agents, implies -T)
+-E:comma-delimited list - agent termination verification for given list (implies -T)
+-I - agent possible termination verification (all agents, implies -T)
+-I:comma-delimited list - agent possible termination verification for given list (implies -T)

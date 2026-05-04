@@ -1,0 +1,30 @@
+#DEFINE N 3
+#DEFINE K 3
+
+server:		buf(agents Aprodcons[N];servers Sprodcons[N]),  
+services	{put, get},
+states		{elem0,elem[K]},								
+actions{<i=1..N>{Aprodcons[i].buf.put, buf.elem0}		-> {Aprodcons[i].Sprodcons[i].ok_put, buf.elem[1]},			
+	<i=1..N><j=1..K-1>{Aprodcons[i].buf.put, buf.elem[j]}	-> {Aprodcons[i].Sprodcons[i].ok_put, buf.elem[j+1]},	
+	<i=1..N><j=2..K>{Aprodcons[i].buf.get, buf.elem[j]}	-> {Aprodcons[i].Sprodcons[i].ok_get, buf.elem[j-1]},	
+	<i=1..N>{Aprodcons[i].buf.get, buf.elem[1]}		-> {Aprodcons[i].Sprodcons[i].ok_get, buf.elem0}
+}
+
+server:		Sprodcons(agents Aprodcons;servers buf),
+services	{doSth,ok_put,ok_get}
+states		{neutral,prod,cons}
+actions	{	{Aprodcons.Sprodcons.doSth, Sprodcons.neutral} 	-> {Aprodcons.buf.put, Sprodcons.prod}		
+		{Aprodcons.Sprodcons.doSth, Sprodcons.neutral}	-> {Aprodcons.buf.get, Sprodcons.cons}
+		{Aprodcons.Sprodcons.ok_put, Sprodcons.prod}	-> {Aprodcons.Sprodcons.doSth, Sprodcons.neutral}
+		{Aprodcons.Sprodcons.ok_get, Sprodcons.cons}	-> {Aprodcons.Sprodcons.doSth, Sprodcons.neutral}
+}
+
+servers 	buf,Sprodcons[N];
+agents	 	Aprodcons[N];	
+ 
+init	->	{ 
+		<j=1..N>Sprodcons[j](Aprodcons[j],buf).neutral,
+	  	buf(Aprodcons[1..N],Sprodcons[1..N]).elem0,
+
+		<j=1..N>Aprodcons[j].Sprodcons[j].doSth, 	
+	}.				

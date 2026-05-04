@@ -1,0 +1,37 @@
+server:	sem (servers proc[2]:proc; agents A[2]:A),
+services	{wait,signal},
+states	{up,down},
+actions {
+	<j=1..2>{A[j].sem.wait, sem.up}	-> {A[j].proc[j].ok_wait, sem.down},
+	<j=1..2>{A[j].sem.signal, sem.down}	-> {A[j].proc[j].ok_sig, sem.up},
+	<j=1..2>{A[j].sem.signal, sem.up}	-> {A[j].proc[j].ok_sig, sem.up},
+};
+server:	proc (servers sem[2]:sem; agents A:A),
+services	{start,ok_wait,ok_sig},
+states	{ini,first,sec,stop},
+actions {
+	{A.proc.start, proc.ini}	-> {A.sem[1].wait, proc.first},
+	{A.proc.ok_wait, proc.first}	-> {A.sem[2].wait, proc.sec},
+	{A.proc.ok_wait, proc.sec}	-> {A.sem[1].signal, proc.first},
+	{A.proc.ok_sig, proc.first}	-> {A.sem[2].signal, proc.sec},
+	{A.proc.ok_sig, proc.sec}	-> {proc.stop},
+};
+server:	r (agents A3:A3),
+services	{left,right},
+states	{res},
+actions {
+	{A3.r.left, r.res}	-> {A3.r.right, r.res},
+	{A3.r.right, r.res}	-> {A3.r.left, r.res},
+};
+agent:	A,A3;
+agents	A[2]:A,A3:A3;
+servers	sem[2]:sem,proc[2]:proc,r:r;
+init	-> {
+	<j=1..2>A[j].proc[j].start,
+	A3.r.left,
+	sem[1](proc[1,2],A[1,2]).up,
+	sem[2](proc[1,2],A[1,2]).up,
+	proc[1](sem[1,2],A[1]).ini,
+	proc[2](sem[1,2],A[2]).ini,
+	r(A3).res,
+}

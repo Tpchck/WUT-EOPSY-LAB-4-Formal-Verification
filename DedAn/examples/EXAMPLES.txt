@@ -1,0 +1,49 @@
+All examples are prepared in source code of the server view. 
+The source codes are included in files which names end with 'S'.
+All the examples are converted by the Dedan program to the agent view.
+The agent views of the examples are contained in files which names end with T
+
+1. BufS.txt - bouded buffer
+It is a no-deadlock example, a bouded buffer with readers and writers.
+Macrogeneration constants defining numbers of elements in the buffer, readers and writers
+are used.
+
+2. BufDeadlockS - buffer with a deadlock
+Users act as readers-writers, therefore a deadlock occurs when all N users read from 
+the empty buffer or all N users write to the full buffer.
+
+3. BufNoDeadlockS - buffer without a deadlock
+The solution uses Dijkstra's butlers which limit the number of reading and writing users.
+The butlers rejest attempts to be the N-th reader or N-th writer.
+
+4. phil3S.txt - 3 philosophers
+The Dijkstra's problem of dining philosophers, limited to 3 philosophers.
+Deadlock occurs.
+
+5. phil3-asymS.txt - 3 philosophers, asymmetric solution
+The solution based on the order of obtaining the forks: 
+one philosopher takes the left fork first and one takes the right fork first.
+
+6. phil3-2orNo_S.txt - 3 philosophers, all-or-nothing solution
+The solution based on taking two forks if both are available, 
+on no fork if at least one fork is taken.
+
+7. phil3-2butlersS.txt - 3 philosophers, butlers solution
+The two butlers are responsible for a prohibition of taking all three forks as least first
+and of taking all three forks as right first.
+
+8. Res_DeadlockS.txt - not enough resources
+A common server containing 2 resources, ordered by 3 users. 
+The server view shows no communication deadlock, as the server works.
+The agent view shows a resource deadlock, as one the users suffers from a lack of resources.
+Only one of the agents is dealocked, 
+test for common deadlock doas not show a deadlock.
+
+9. SemS.txt - two semaphores and a side process not using the semaphores
+Two users use two semaphores, in crossed order: 
+the first user issues 'wait' on sem[1] then on sem[2],
+the second uses issues 'wait' in opposite order,
+the third process does something else.
+
+10. sem_noDeadlockS.txt - two semaphores - no deadlock
+The semaphores taken is the uniform order.

@@ -1,0 +1,55 @@
+server:	sem,
+services	{wait, signal}
+states	{up, down}
+;
+server:	proc,
+services	{start, ok_wait, ok_sig}
+states	{ini, first, sec, stop}
+;
+server:	r,
+services	{left, right}
+states	{res}
+;
+agent:	A (servers sem[2]:sem,proc:proc),
+actions {
+	{A.proc.ok_sig, proc.first}	-> {A.sem[2].signal, proc.sec},
+	{A.proc.ok_wait, proc.first}	-> {A.sem[2].wait, proc.sec},
+	{A.proc.start, proc.ini}	-> {A.sem[1].wait, proc.first},
+	{A.proc.ok_sig, proc.sec}	-> {proc.stop},
+	{A.proc.ok_wait, proc.sec}	-> {A.sem[1].signal, proc.first},
+	{A.sem[1].signal, sem[1].down}	-> {A.proc.ok_sig, sem[1].up},
+	{A.sem[1].signal, sem[1].up}	-> {A.proc.ok_sig, sem[1].up},
+	{A.sem[1].wait, sem[1].up}	-> {A.proc.ok_wait, sem[1].down},
+	{A.sem[2].signal, sem[2].down}	-> {A.proc.ok_sig, sem[2].up},
+	{A.sem[2].signal, sem[2].up}	-> {A.proc.ok_sig, sem[2].up},
+	{A.sem[2].wait, sem[2].up}	-> {A.proc.ok_wait, sem[2].down},
+};
+agent:	A3 (servers r:r),
+actions {
+	{A3.r.left, r.res}	-> {A3.r.right, r.res},
+	{A3.r.right, r.res}	-> {A3.r.left, r.res},
+};
+agent:	A__1 (servers sem[2]:sem,proc:proc),
+actions {
+	{A__1.proc.ok_sig, proc.first}	-> {A__1.sem[1].signal, proc.sec},
+	{A__1.proc.ok_wait, proc.first}	-> {A__1.sem[1].wait, proc.sec},
+	{A__1.proc.start, proc.ini}	-> {A__1.sem[2].wait, proc.first},
+	{A__1.proc.ok_sig, proc.sec}	-> {proc.stop},
+	{A__1.proc.ok_wait, proc.sec}	-> {A__1.sem[2].signal, proc.first},
+	{A__1.sem[1].signal, sem[1].down}	-> {A__1.proc.ok_sig, sem[1].up},
+	{A__1.sem[1].signal, sem[1].up}	-> {A__1.proc.ok_sig, sem[1].up},
+	{A__1.sem[1].wait, sem[1].up}	-> {A__1.proc.ok_wait, sem[1].down},
+	{A__1.sem[2].signal, sem[2].down}	-> {A__1.proc.ok_sig, sem[2].up},
+	{A__1.sem[2].signal, sem[2].up}	-> {A__1.proc.ok_sig, sem[2].up},
+	{A__1.sem[2].wait, sem[2].up}	-> {A__1.proc.ok_wait, sem[2].down},
+};
+agents	A:A,A__1:A__1,A3:A3;
+servers	sem[2]:sem,proc[2]:proc,r:r;
+init	-> {
+	A(sem[1,2],proc[1]).proc[1].start,
+	A__1(sem[1,2],proc[2]).proc[2].start,
+	A3(r).r.left,
+	<j=1..2>sem[j].up,
+	<j=1..2>proc[j].ini,
+	r.res,
+}

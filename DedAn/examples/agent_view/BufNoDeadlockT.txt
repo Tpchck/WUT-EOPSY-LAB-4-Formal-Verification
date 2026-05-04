@@ -1,0 +1,49 @@
+server:	buf,
+services	{put, get}
+states	{elem0, elem[1]}
+;
+server:	Sprodcons,
+services	{doSth, may_do, cannot_do, ok_put, ok_get, go_neutral}
+states	{neutral, prod, cons}
+;
+server:	butler,
+services	{wants_do, done}
+states	{want0, want[1]}
+;
+agent:	Aprodcons (servers buf:buf,Sprodcons:Sprodcons,butler[2]:butler),
+actions {
+	{Aprodcons.buf.get, buf.elem[1]}	-> {Aprodcons.Sprodcons.ok_get, buf.elem0},
+	<j=2..1>{Aprodcons.buf.get, buf.elem[j]}	-> {Aprodcons.Sprodcons.ok_get, buf.elem[j-1]},
+	<j=1..0>{Aprodcons.buf.put, buf.elem[j]}	-> {Aprodcons.Sprodcons.ok_put, buf.elem[j+1]},
+	{Aprodcons.buf.put, buf.elem0}	-> {Aprodcons.Sprodcons.ok_put, buf.elem[1]},
+	{Aprodcons.butler[1].done, butler[1].want[1]}	-> {Aprodcons.Sprodcons.go_neutral, butler[1].want0},
+	{Aprodcons.butler[1].wants_do, butler[1].want[1]}	-> {Aprodcons.Sprodcons.cannot_do, butler[1].want[1]},
+	<j=2..1>{Aprodcons.butler[1].done, butler[1].want[j]}	-> {Aprodcons.Sprodcons.go_neutral, butler[1].want[j-1]},
+	<j=1..0>{Aprodcons.butler[1].wants_do, butler[1].want[j]}	-> {Aprodcons.Sprodcons.may_do, butler[1].want[j+1]},
+	{Aprodcons.butler[1].wants_do, butler[1].want0}	-> {Aprodcons.Sprodcons.may_do, butler[1].want[1]},
+	{Aprodcons.butler[2].done, butler[2].want[1]}	-> {Aprodcons.Sprodcons.go_neutral, butler[2].want0},
+	{Aprodcons.butler[2].wants_do, butler[2].want[1]}	-> {Aprodcons.Sprodcons.cannot_do, butler[2].want[1]},
+	<j=2..1>{Aprodcons.butler[2].done, butler[2].want[j]}	-> {Aprodcons.Sprodcons.go_neutral, butler[2].want[j-1]},
+	<j=1..0>{Aprodcons.butler[2].wants_do, butler[2].want[j]}	-> {Aprodcons.Sprodcons.may_do, butler[2].want[j+1]},
+	{Aprodcons.butler[2].wants_do, butler[2].want0}	-> {Aprodcons.Sprodcons.may_do, butler[2].want[1]},
+	{Aprodcons.Sprodcons.cannot_do, Sprodcons.cons}	-> {Aprodcons.Sprodcons.doSth, Sprodcons.neutral},
+	{Aprodcons.Sprodcons.go_neutral, Sprodcons.cons}	-> {Aprodcons.Sprodcons.doSth, Sprodcons.neutral},
+	{Aprodcons.Sprodcons.may_do, Sprodcons.cons}	-> {Aprodcons.buf.get, Sprodcons.cons},
+	{Aprodcons.Sprodcons.ok_get, Sprodcons.cons}	-> {Aprodcons.butler[1].done, Sprodcons.cons},
+	{Aprodcons.Sprodcons.doSth, Sprodcons.neutral}	-> {Aprodcons.butler[1].wants_do, Sprodcons.cons},
+	{Aprodcons.Sprodcons.doSth, Sprodcons.neutral}	-> {Aprodcons.butler[2].wants_do, Sprodcons.prod},
+	{Aprodcons.Sprodcons.cannot_do, Sprodcons.prod}	-> {Aprodcons.Sprodcons.doSth, Sprodcons.neutral},
+	{Aprodcons.Sprodcons.go_neutral, Sprodcons.prod}	-> {Aprodcons.Sprodcons.doSth, Sprodcons.neutral},
+	{Aprodcons.Sprodcons.may_do, Sprodcons.prod}	-> {Aprodcons.buf.put, Sprodcons.prod},
+	{Aprodcons.Sprodcons.ok_put, Sprodcons.prod}	-> {Aprodcons.butler[2].done, Sprodcons.prod},
+};
+agents	Aprodcons[2]:Aprodcons;
+servers	buf:buf,Sprodcons[2]:Sprodcons,get_butler:butler,put_butler:butler;
+init	-> {
+	Aprodcons[1](buf,Sprodcons[1],get_butler,put_butler).Sprodcons[1].doSth,
+	Aprodcons[2](buf,Sprodcons[2],get_butler,put_butler).Sprodcons[2].doSth,
+	buf.elem0,
+	<j=1..2>Sprodcons[j].neutral,
+	get_butler.want0,
+	put_butler.want0,
+}

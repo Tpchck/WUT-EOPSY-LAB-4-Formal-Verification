@@ -1,0 +1,112 @@
+<model>::=[<title>]<system>
+
+<title>::= system <sys_id>;
+<system>::=<server_view> | <agent_view>
+<server_view>::=<server_types> [<agent_types_list>] <variables> <server_view_init>
+<agent_view>::=<server_headers> <agent_types> <varibles> <agent_view_init>
+
+<server_types>::=<server_type>*
+<server_type>::=<server_header><actions>;
+<server_header>::=<server_relations><elements>
+<server_relations>::= server: <serv_type_id>(<server_formal_pars>),
+<server_formal_pars>::=<formal_pars_servers>;<formal_pars_agents> | <formal_pars_agents>;<formal_pars_servers>
+<formal_pars_servers>::= servers <servers_formal_pars_list>
+<formal_pars_agents>::= agents <agents_formal_pars_list>
+<servers_formal_pars_list>::=<server_formal_par> [,<server_formal_par>]*
+<agents_formal_pars_list>::=<agent_formal_par> [,<agent_formal_par>]*
+<server_formal_par>::=<server_formal_par_id> ['['<vector_size>']']  [:<server_type_id>] | 
+	<server_formal_par_id> ['['<vector_size>']'] :self
+<agent_formal_par>::=<agent_formal_par_id> [:<agent_type_id>] | <agent_formal_par_id> :self
+
+<elements>::=<states><services> | <services><states>
+<states>::= states {<state_list>},
+<services>::= services {<service_list>},
+<state_list>::=<state_def> [,<state_def>]*
+<service_list>::=<service_def> [,<service_def>]*
+<state_def>::=<state_id> ['['<vector_size>']']
+<service_def>::=<service_id> ['['vector_size']']
+
+<actions>::={<action_list>}
+<action_list>::=<action> [<action>]*
+<action>::=<repeaters><input> -> <output>,
+<repeaters>::=<repeater> | <repeater><repeater> | <repeater><repeater><repeater>
+<repeater>::='<'<repeater_id><lower_limit>..<upper_limit>'>'
+<input>::={<message>, <serv_state>}
+<output>::={<message>, <serv_state>} | {<serv_state>}
+<message>::=<agent_term>.<server_term>.<service_term>
+<serv_state>::=<server_term>.<state_term>
+<agent_term>::=<agent_id> ['['<index>']']
+<server_term>::=<server_id> ['['<index>']']
+<service_term>::=<service_id> ['['<expression>']']
+<state_term>::=<state_id> ['['<expression>']']
+
+<agent_types_list>::= agent: <agent_types_id_list>;
+<agent_types_id_list>::=<agent_type_id> [,<agent_type_id>]*
+
+<variables>::=<server_variables><agent_variables> | <agent_variables><server_variables>
+<server_variables>::= servers <server_variable_list>;
+<agent_variables>::= agents <agent_variable_list>;
+<server_variable_list>::= <server_decl> [,<server_decl>]*
+<server_decl>::= <server_id> [[<vector_size>]]  [:<server_type_id>]
+<agent_variable_list>::= <agent_decl> [,<agent_decl>]*
+<agent_decl>::= <agent_id> [[<vector_size>]]  [:<agent_type_id>]
+
+<server_view_init>::= init -> { <server_view_init_list> }
+<server_view_init_list>::= <server_view_init> [<server_view_init>]*
+<server_view_init>::=<server_view_server_init><server_view_agent_init>
+<server_view_server_init>::=<repeater><server_id>'['index']'(<server_view_parameter_list>).<server_init>, |
+	<server_id>(<server_view_parameter_list>).<server_init>,
+<server_view_agent_init>::=<repeater><agent_id>'['index']'.<agent_init>, | <agent_id>.<agent_init>,
+<server_view_parameter_list>::=<server_view_parameter> [,<server_view_prameter>]*
+<server_view_parameter>::=<server_parameter> | <agent_parameter>
+<server_parameter>::=<server_id>['['<index_list>']']
+<agent_parameter>::=<agent_id>['['<index_list>']']
+<index_list>::= <index> [,<index>]* | <index>..<index>
+<server_init>::= <state_id> ['['<index>']']
+<agent_init>::= <server_id> ['['<index>']'] . <service_id> ['['<index>']']
+
+<server_headers>::=<server_header> ; [<server_header> ;]*
+<agent_types>::=<agent_type> [<agent_type>]*
+<agent_type>::=<agent_header><actions> ;
+<agent_header>::=agent: <agent_type_id>(<formal_pars_servers>),
+
+<agent_view_init>::= init -> { <agent_view_init_list> }
+<agent_view_init_list>::= <agent_view_init> [<agent_view_init>]*
+<agent_view_init>::=<agent_view_server_init><agent_view_agent_init>
+<agent_view_server_init>::=<repeater><server_id>'['index']'.<server_init>, | <server_id>.<server_init>,
+<agent_view_agent_init>::=<repeater><agent_id>'['index']'(<agent_view_parameter_list>).<agent_init>, | 
+	<agent_id>(<agent_view_parameter_list>).<agent_init>,
+<agent_view_parameter_list>::=<agent_view_parameter> [,<agent_view_prameter>]*
+<agent_view_parameter>::=<server_parameter>
+
+<system_id>::=<identifier>
+<server_type_id>::=<identifier>
+<agent_type_id>::=<identifier>
+<server_formal_par_id>::=<identifier>
+<agent_formal_par_id>::=<identifier>
+<server_id>::=<identifier>
+<agent_id>::=<identifier>
+<state_id>::=<identifier>
+<service_id>::=<identifier>
+<repeater_id>::=<identifier>
+<lower_limit>::=<number>
+<upper_limit>::=<number>
+<vector_size>::=<number>
+<expression>::=<number> | <repeater_id> | <number><operator><number> | <repeater_id><operator><number> |
+	<number><operator><repeater_id>
+<operator>::= + | -
+<number>::=<digit> [<digit>]*
+<identifier>::=<letter> [<character>]*
+<digit>::=0..9
+<letter>::=A..Z|a..z
+<character>::=<letter> | <digit> | _
+
+
+LEGEND
+| alternative productions
+[] optional element
+* repetition 0 or more times
+.,;+-(){} literals
+'[' ']' '<' '>' literals
+.. -> two-character literals
+A..Z range of literals
