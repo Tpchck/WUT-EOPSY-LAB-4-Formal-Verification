@@ -9,3 +9,6 @@ The system models three producers and two consumers operating on a shared bounde
 ## Verification Result
 
 ![Verification showing a common deadlock](DedAn/screenshots/Screenshot_1.png)
+
+
+_Warsaw University of Technology — EGUI Laboratory, Semester 6_
