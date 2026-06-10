@@ -1,0 +1,30 @@
+Problem: Producer-Consumer Synchronization (Lab 3)
+
+The program implements a producer-consumer system using POSIX semaphores
+and shared memory. It has 3 producers and 2 consumers sharing a bounded
+FIFO queue.
+
+Producers:
+  - Producer A generates elements of type A
+  - Producer B generates elements of type B
+  - Producer C generates elements of type C
+
+Consumers:
+  - Consumer 1 takes one A or B element when there are no C elements
+  - Consumer 2 takes a triple (A+B+C) when all three types are present,
+    or takes a single C when no A and B are available
+
+Synchronization:
+  - mutex     - binary semaphore, protects access to the shared queue
+  - slots     - counting semaphore, prevents producers from writing
+                when the queue is full
+  - wake_c1   - binary semaphore, wakes up Consumer 1 when A or B
+                is added to the queue
+  - wake_c2   - binary semaphore, wakes up Consumer 2 when C is added
+
+The model was abstracted to reduce the state space: queue capacity
+is set to 4 (instead of 16 in real code) and each producer generates
+exactly 1 element. The queue state is represented as binary flags
+(presence/absence of each element type).
+
+Verification result: No deadlock detected (all servers Ok).

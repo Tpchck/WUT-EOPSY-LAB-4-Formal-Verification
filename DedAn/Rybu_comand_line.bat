@@ -1,1 +1,0 @@
-rybu.exe < semafor.txt > semafor.dedan.txt

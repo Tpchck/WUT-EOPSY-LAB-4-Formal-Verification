@@ -1,12 +1,61 @@
-# Executables and Binaries
+# ========================================
+# DedAn toolchain (binaries, DLLs, configs)
+# ========================================
+DedAn/DedAn.exe
+DedAn/rybu.exe
+DedAn/*.dll
+DedAn/CommLine_pars.txt
+DedAn/DedAn_files.txt
+DedAn/Rybu_comand_line.bat
+DedAn/Syntax.txt
+DedAn/Syntax-Timed.txt
+DedAn/Rybu.pdf
+DedAn/out.txt
+DedAn/examples/
+DedAn/screenshots/
+
+# ========================================
+# Reference PDFs
+# ========================================
+*.pdf
+
+# ========================================
+# Student notes & internal instructions
+# ========================================
+lab4.md
+lab4_agent.md
+
+# ========================================
+# Submission archive
+# ========================================
+*.zip
+
+# ========================================
+# Examples & reference material
+# ========================================
+/EXAMPLES_OF_HOW_NEEDED_TO_SEND/
+
+# ========================================
+# Lab 3 source code (separate project)
+# ========================================
+/lab3 sync code/
+
+# ========================================
+# Video transcripts & guides
+# ========================================
+/Video Guide Transcript/
+
+# ========================================
+# Executables, binaries, logs
+# ========================================
 *.exe
 *.dll
-
-# Logs and Output
-out.txt
 *.log
+out.txt
 
-# OS Generated
+# ========================================
+# OS generated
+# ========================================
 .DS_Store
 Thumbs.db
-/Video Guide Transcript
+desktop.ini
