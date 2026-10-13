@@ -1,4 +1,4 @@
-# EOPS Lab 4: Formal Verification
+# EOPSY Lab 4: Formal Verification
 
 This project contains the formal verification of a producer-consumer synchronization mechanism using the Rybu modeling language and the DedAn verifier.
 
@@ -8,7 +8,7 @@ The system models three producers and two consumers operating on a shared bounde
 
 ## Verification Result
 
-![Verification showing a common deadlock](DedAn/screenshots/Screenshot_1.png)
+![Verification showing a common deadlock](verification/screenshots/Screenshot_1.png)
 
 
-_Warsaw University of Technology — EGUI Laboratory, Semester 6_
+_Warsaw University of Technology — EOPSY Laboratory, Semester 6_
